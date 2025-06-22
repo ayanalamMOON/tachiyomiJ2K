@@ -8,12 +8,13 @@ plugins {
     id(Plugins.kotlinSerialization)
     id("com.google.android.gms.oss-licenses-plugin")
     id(Plugins.googleServices) apply false
-    id("com.google.firebase.crashlytics")
+    id("com.google.firebase.crashlytics") apply false
     id("org.jetbrains.kotlin.plugin.compose") version AndroidVersions.kotlin // this version matches your Kotlin version
 }
 
 if (gradle.startParameter.taskRequests.toString().contains("Standard")) {
     apply<com.google.gms.googleservices.GoogleServicesPlugin>()
+    apply<com.google.firebase.crashlytics.buildtools.gradle.CrashlyticsPlugin>()
 }
 
 fun runCommand(command: String): String {
@@ -168,11 +169,6 @@ dependencies {
 
     implementation("androidx.multidex:multidex:2.0.1")
 
-    implementation(platform("com.google.firebase:firebase-bom:33.13.0"))
-
-    implementation("com.google.firebase:firebase-analytics-ktx")
-    implementation("com.google.firebase:firebase-crashlytics-ktx")
-
     val lifecycleVersion = "2.8.7"
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycleVersion")
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:$lifecycleVersion")
@@ -295,6 +291,15 @@ dependencies {
 
     // Android Chart
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
+}
+
+// Firebase dependencies only for Standard variants
+if (gradle.startParameter.taskRequests.toString().contains("Standard")) {
+    dependencies {
+        implementation(platform("com.google.firebase:firebase-bom:33.13.0"))
+        implementation("com.google.firebase:firebase-analytics-ktx")
+        implementation("com.google.firebase:firebase-crashlytics-ktx")
+    }
 }
 
 tasks {
