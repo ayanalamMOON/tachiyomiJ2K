@@ -18,12 +18,18 @@ if (gradle.startParameter.taskRequests.toString().contains("Standard")) {
 }
 
 fun runCommand(command: String): String {
-    val byteOut = ByteArrayOutputStream()
-    project.exec {
-        commandLine = command.split(" ")
-        standardOutput = byteOut
+    return try {
+        val process = ProcessBuilder(command.split(" "))
+            .redirectOutput(ProcessBuilder.Redirect.PIPE)
+            .redirectError(ProcessBuilder.Redirect.PIPE)
+            .start()
+
+        val output = process.inputStream.bufferedReader().readText()
+        process.waitFor()
+        output.trim()
+    } catch (e: Exception) {
+        ""
     }
-    return String(byteOut.toByteArray()).trim()
 }
 
 val supportedAbis = setOf("armeabi-v7a", "arm64-v8a", "x86", "x86_64")
